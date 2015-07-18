@@ -179,6 +179,7 @@
             if(undoManager) undoManager.clearHistory();
             paper.clear();
 
+            _ids = {};
             optionManager.resetOptions();
             
             var script = document.createElement("script");
@@ -349,4 +350,3 @@
     init();
 
 }());
-    

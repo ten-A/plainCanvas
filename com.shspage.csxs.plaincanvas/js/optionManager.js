@@ -1,6 +1,5 @@
 /*
     optionManager
-
     // ----------------------
     // functions for UI and optional values
     // ----------------------
@@ -17,7 +16,6 @@
   
     resetOptions()
     ... resets option UI to default status
-
     noOption()
     ... hides the UIs for option
     // ----------------------
@@ -68,8 +66,6 @@ var optionManager = (function() {
     // ----
     // reset the status of the UIs for option
     var resetOptions = function() {
-        _ids = {};
-      
         document.getElementById("table_options").style.display = "block";
         for(var i = 1; i <= OPTION_COUNT; i++){
             document.getElementById("td" + i).innerText = "item" + i;
