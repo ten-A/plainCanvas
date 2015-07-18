@@ -191,6 +191,54 @@
         fr.readAsText(fileobj, SCRIPT_ENCODING);
     }
 
+    //split off call back function.
+    csInterface.addEventListener("getCallBack",
+        function(evt) {
+            var result = evt.data;
+            if(paper.project == null) return;
+            if(result == "") return;
+
+        var r = result.split(",");
+        var p;
+        var i = 0;
+        var rlen = r.length;
+                    
+            while(i < rlen){
+                if(r[i] == "@"){
+                    p = new paper.Path();
+                    p.closed = r[++i] == "1";
+
+                    // fill
+                    if(r[++i] == "1"){  // filled
+                        p.fillColor = getPaperColorFromResult(
+                            p.id, r[++i],r[++i],r[++i],r[++i],r[++i], true);
+                        i++;
+                    } else {
+                        i += 6;
+                    }
+
+                    // stroke
+                    if(r[i++] == "1"){  // stroked
+                        p.strokeWidth = pf(r[i]);
+                        p.strokeColor = getPaperColorFromResult(
+                            p.id, r[++i],r[++i],r[++i],r[++i],r[++i], false);
+                        i++;
+                    } else {
+                        p.strokeWidth = 0;
+                        p.strokeColor = null;
+                        i += 6;
+                    }
+
+                } else {
+                    var anc = new paper.Point(pf(r[i++]), -pf(r[i++]));
+                    var handleOut = new paper.Point(pf(r[i++]), -pf(r[i++]));
+                    var handleIn = new paper.Point(pf(r[i++]), -pf(r[i++]));
+                    var seg = new paper.Segment(anc, handleIn, handleOut);
+                    p.add(seg);
+                }
+            }
+        }
+    );
 
     // ----------------------
     // initialize the extension
@@ -209,52 +257,7 @@
         // serialize paths selected in artboard
         // and convert it into paths as paper object
         $("#btn_in").click(function () {
-            csInterface.evalScript('serializePaths()', function(result){
-                if(paper.project == null) return;
-                if(result == "") return;
-                
-                //console.log(result);
-
-                var r = result.split(",");
-                var p;
-                var i = 0;
-                var rlen = r.length;
-                
-                while(i < rlen){
-                    if(r[i] == "@"){
-                        p = new paper.Path();
-                        p.closed = r[++i] == "1";
-                        
-                        // fill
-                        if(r[++i] == "1"){  // filled
-                            p.fillColor = getPaperColorFromResult(
-                              p.id, r[++i],r[++i],r[++i],r[++i],r[++i], true);
-                            i++;
-                        } else {
-                            i += 6;
-                        }
-                        
-                        // stroke
-                        if(r[i++] == "1"){  // stroked
-                            p.strokeWidth = pf(r[i]);
-                            p.strokeColor = getPaperColorFromResult(
-                              p.id, r[++i],r[++i],r[++i],r[++i],r[++i], false);
-                            i++;
-                        } else {
-                            p.strokeWidth = 0;
-                            p.strokeColor = null;
-                            i += 6;
-                        }
-                        
-                    } else {
-                        var anc = new paper.Point(pf(r[i++]), -pf(r[i++]));
-                        var handleOut = new paper.Point(pf(r[i++]), -pf(r[i++]));
-                        var handleIn = new paper.Point(pf(r[i++]), -pf(r[i++]));
-                        var seg = new paper.Segment(anc, handleIn, handleOut);
-                        p.add(seg);
-                    }
-                }
-            });
+            csInterface.evalScript('serializePaths()');
         });
 
         // out button
